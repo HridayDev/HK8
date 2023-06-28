@@ -1,0 +1,101 @@
+RAM/Storage:
+- 256-Byte RAM To Be Used By Programs
+- 2048x 24-Bit Word Storage to store the programs
+
+
+Registers:
+- IR 		:24-Bit  - Current Instruction being Executed
+
+- A 		:8-Bit   - General Purpose and operand 1 of alu
+- B 		:8-Bit   - General Purpose and operand 2 of alu
+
+- SUM 		:8-Bit   - Output Of ADD/SUB
+- MAR 	    :8-Bit   - Current Memory Address
+- Output 	:8-Bit   - Display Content In Decimal
+
+- FLAGS 	:2-Bit   - CPU Flags
+
+
+Micro Instructions (24, MAX USED):
+HALT - Stop Pc
+FLAG - Set Flags
+IOPI - Input on io port/register
+IOPO - Output on io port/register
+IOSO - Set io port/register to output
+SARI - Storage Address Register In
+STIR - Storage To Instruction Register
+IOUT - Current Instruction Args Out On BUS
+CINC - Counter Increment
+COUT - Counter Out
+JUMP - Change Counter
+OUTI - Output Register In
+MARL - Use Last 4 bits as address
+MARF - Use First 4 bits as address
+RAMI - RAM In
+RAMO - RAM Out
+ARIN - A reg in
+AOUT - A reg out
+BRIN - B reg in
+BOUT - B reg out
+SUMO - Sum Out
+ADDS - Add And Save To SUM register
+SUBS - Substract And Save To SUM register
+REST - Reset Everything Other Than RAM
+
+
+Instructions (18, upto 32):
+0: NOP - Do Nothing For A Few Clock Cycles
+	CNTO|SARI,     CINC|STIR,    0,    0,    0,    0,    0,    0
+
+1: LDA 0000 - Load A register With Value On Memory Address
+	COUT|SARI,     CINC|STIR,     IOUT|MARL,    RAMO|ARIN,    0,    0,    0,    0
+
+2: LDB 0000 - Load B register With Value On Memory Address
+	COUT|SARI,     CINC|STIR,     IOUT|MARL,    RAMO|BRIN,    0,    0,    0,    0
+
+3: STA 0000 - Move Value Of A register On Memory Address
+	COUT|SARI,     CINC|STIR,    IOUT|MARL,    AOUT|RAMI,    0,    0,    0,    0
+
+4: STB 0000 - Move Value Of B register On Memory Address
+	COUT|SARI,     CINC|STIR,    IOUT|MARL,    BOUT|RAMI,    0,    0,    0,    0
+
+5: ADD 0000 0000 - Adds value Of 2 Memory addresses, values of A and B registers are lost
+	COUT|SARI,     CINC|STIR,    IOUT|MARF,    RAMO|ARIN,    IOUT|MARL,    RAMO|BRIN|ADDS|FLAG,    0,    0
+
+6: SUB 0000 0000 - Subtracts value 2 memory address, values of A and B registers are lost
+	COUT|SARI,     CINC|STIR,    IOUT|MARF,    RAMO|ARIN,    IOUT|MARL,    RAMO|BRIN|SUBS|FLAG,    0,    0
+
+7: STS 0000 - Stores Value Of SUM register on Memory Address
+	COUT|SARI,     CINC|STIR,    IOUT|MARL,    SUMO|RAMI,    0,    0,    0,    0
+
+8: RAM 0000 - Select memory address.
+	COUT|SARI,     CINC|STIR,    IOUT|MARL,    0,    0,    0,    0,    0
+
+9: LDI 00000000 - Set currently selected memory address to a 8-bit value
+	COUT|SARI,     CINC|STIR,    IOUT|RAMI,    0,    0,    0,    0,    0
+
+10: JMP 00000000 - Jump to Specific Storage Address
+	COUT|SARI,     CINC|STIR,    IOUT|JUMP|SARI,    0,    0,    0,    0,    0
+
+11: JPC 0000 - Jump to Specific Storage Address If Carry Is 1
+	COUT|SARI,     CINC|STIR,    IOUT|JUMP|SARI,    0,    0,    0,    0,    0
+		!!!! WORKS ONLY IF CARRY FLAG IS ON/`1` !!!!
+
+12: JPZ 0000 - Jump to Specific Storage Address If SUM Register Is 0
+	COUT|SARI,     CINC|STIR,    IOUT|JUMP|SARI,    0,    0,    0,    0,    0
+		!!!! WORKS ONLY IF ZERO FLAG IS ON/`1` !!!!
+
+13: OUT 0000 - Loads Value Of Memory Adress On Output Register to display in decimal
+	COUT|SARI,     CINC|STIR,   IOUT|MARL,    RAMO|OUTI,    0,    0,    0,    0
+
+14: RST - Reset The Computer Except RAM and Program Storage
+	COUT|SARI,     CINC|STIR,    REST,    0,    0,    0,    0,    0
+
+15: LIO - Load IO Value On Memory Address, IO->MA
+	COUT|SARI,     CINC|STIR,     IOUT|MARL,    RAMO|IOPO|IOSO,    0,    0,    0,    0
+
+16: SIO - Move Value Of IO On Memory Address, IO<-MA
+	COUT|SARI,     CINC|STIR,     IOUT|MARL,    RAMO|IOPI,    0,    0,    0,    0
+
+17: HLT - Halt The Clock
+	COUT|SARI,     CINC|STIR,    HALT,    0,    0,    0,    0,    0

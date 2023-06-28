@@ -1,0 +1,366 @@
+##########################################################
+##   _______   _                _    _   _  __   ___    ##
+##  |__   __| | |              | |  | | | |/ /  / _ \   ##
+##     | |    | |__     ___    | |__| | | ' /  | (_) |  ##
+##     | |    | '_ \   / _ \   |  __  | |  <    > _ <   ##
+##     | |    | | | | |  __/   | |  | | | . \  | (_) |  ##
+##     |_|    |_| |_|  \___|   |_|  |_| |_|\_\  \___/   ##
+##########################################################
+
+
+RAM:	 "256-Byte RAM To Be Used By Programs"
+Storage: "2048x 24-Bit Word Storage to store the programs"
+
+
+Registers:
+	- Special:
+		- IR:	  "24-Bit" # Current Instruction being Executed
+		- Output: "8-Bit" # Display it's content on 7-segment displays
+		- SUM: 	  "8-Bit" # Output Of ADD/SUB
+		- MAR:	  "8-Bit" # Current Memory Address
+
+	- Gneral Purpose:
+		- A: "8-Bit"   - # General Purpose and operand 1 of alu
+		- B: "8-Bit"   - # General Purpose and operand 2 of alu
+
+	- FLAGS: "2-Bit"  # CPU Flags
+		- 0: "Zero Flag"  # It is set if the output of last alu operation was Zero(0)
+		- 1: "Carry Flag" # It is set if the output of last alu operation overflowed and used a carry
+
+
+Micro Instructions: "21 (MAX 24)":
+	- Basics:
+		- HALT: "Halt The Clock"
+		- REST: "Reset Everything Other Than RAM and Storage"
+		- FLAG: "Checks for current state and sets flags accordingly"
+
+	- Storage:
+		- SARI: "Storage Address Register In"
+		- STIR: "Storage To Instruction Register"
+	
+	- Program Counter:
+		- CINC: "Counter Increment"
+		- COUT: "Counter Out On Storage Address"
+		- JUMP: "Change Counter"
+
+	- RAM/Memory:
+		- MARI: "Input Address From BUS Into Memory Address"
+		- MEMI: "RAM In"
+		- MEMO: "RAM Out"
+
+	- Special Registers:
+		- IROF: "Load first 3 bits of IR 19-bit args on BUS"
+		- IROS: "Load first 8 bits of last 16-bits of IR 19-bit args on BUS"
+		- IROT: "Load last 8 bits of IR 19-bit args on BUS"
+		- IROA: "Loads First 11 bits of IR 19-bit args onto Program Counter"
+		- OUTI: "Output Register In"
+
+	- General Purpose Registers:
+		- ARIN: "A reg in"
+		- AOUT: "A reg out"
+		- BRIN: "B reg in"
+		- BOUT: "B reg out"
+
+	- ALU:
+		- SUMO: "Sum Out"
+		- ADDS: "Add Reg A and Reg B And Save To SUM register"
+		- SUBS: "Substract Reg B from Reg A And Save To SUM register"
+
+
+Instructions (17, upto 32):
+
+	- 0:  {"NOP"} # Do Nothing
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+
+	- 1:  {"LDA", "MEM Add. (8)"} # Load Value Of MEM Add. Into Reg. A
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "MEMO|ARIN"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 2:  {"STA", "MEM Add. (8)"} # Store Value Of Reg. A Into MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "AOUT|MEMI"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 3:  {"LDB", "MEM Add. (8)"} # Load Value Of MEM Add. Into Reg. B
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "MEMO|BRIN"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 4:  {"STB", "MEM Add. (8)"} # Store Value Of Reg. A Into MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "BOUT|MEMI"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+
+	- 5:  {"ADD", "MEM Add. A (8)", "MEM Add. B (8)"} # Add MEM Add. A and B And Store Result In SUM Reg
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "MEMO|ARIN"
+		- 4: "IROT|MARI"
+		- 5: "MEMO|BRIN|ADDS|FLAG"
+		- 6: ""
+		- 7: "0"
+	- 6:  {"SUB", "MEM Add. A (8)", "MEM Add. B (8)"} # Subtract MEM Add. B from A And Store Result In SUM Reg
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "MEMO|ARIN"
+		- 4: "IROT|MARI"
+		- 5: "MEMO|BRIN|SUBS|FLAG"
+		- 6: "0"
+		- 7: "0"
+	- 7:  {"STS", "MEM Add. (8)"} # Store SUM reg to MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "SUMO|MEMI"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+
+	- 8:  {"MEM", "MEM Add. (8)"} # Set Memory Address Reg to MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 9:  {"LDI", "MEM Add. (8)", "VAL (8)"} # Load Imidieate value VAL Into MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "IROT|MEMI"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	
+	- 10: {"JMP", "Storage Add. (11)"} # Jump storage to a specific address
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 11: {"JPZ", "Storage Add. (11)"} # Jump storage to a specific address ONLY IF zero flag is set
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 12: {"JPC", "Storage Add. (11)"} # Jump storage to a specific address ONLY IF Carry flag is set
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	
+	- 13: {"OUT", "MEM Add. (8)"} # Output Value Of a memory address
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "MEMO|OUTI"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 14: {"OTI", "VAL (8)"} # Output a imidieate value
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|OUTI"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+
+	- 15: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 16: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 17: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 18: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 19: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 20: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 21: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 22: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 23: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 24: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 25: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 26: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 27: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 28: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 29: {"PLH"} # A Placeholder Instruction
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "0"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	
+	- 30: {"RST"} # Reset The CPU Other than ram and storage and clear everything
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "REST"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 31: {"HLT"} # Halt The Clock
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "HALT"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"

@@ -28,6 +28,26 @@ Registers:
 		- 1: "Carry Flag" # It is set if the output of last alu operation overflowed and used a carry
 
 
+Components List:
+	- 8-Bit BUS
+	- 11-Bit BUS
+	- Clock
+	- Output
+	- Output Reg.
+	- ALU
+	- SUM Reg.
+	- Flags/Flags Reg.
+	- MAR
+	- Memory
+	- A Reg.
+	- B Reg.
+	- IR
+	- Counter
+	- Storage
+	- Control Signals
+	- Control Unit
+
+
 Micro Instructions: "21 (MAX 24)":
 	- Basics:
 		- HALT: "Halt The Clock"

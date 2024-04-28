@@ -4,5 +4,5 @@ total 64kb of mem add
 
 ROM           16kB = 0x0000-0x3FFF
 RAM            8kB = 0x4000-0x5FFF
-STACK          4kB = 0x6000-0x6FFF
-Extra Devices 36kB = 0x7000-0xFFFF
+STACK          8kB = 0x6000-0x7FFF
+Extra Devices 32kB = 0x8000-0xFFFF

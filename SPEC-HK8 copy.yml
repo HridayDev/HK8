@@ -19,7 +19,7 @@ Note For ROM: "Every pair of 2 bytes make up the IR" # ex. 0x0000 is left 8 bits
 IR: "16-Bit" # Current Instruction being Executed
 -  0-7: "Instruction" # 8-bit, total 256 instructions
 - 8-23: "Argument 1" # 16-bit
-
+ 
 Registers:
 	- Special:
 		- IR:	  "24-Bit" # Current Instruction being Executed

@@ -8,16 +8,24 @@
 ##########################################################
 
 
-RAM:	 "256-Byte RAM To Be Used By Programs"
-Storage: "2048x 24-Bit Word Storage to store the programs"
 
+Memory: "13-bit Wide" # Total 8kb, 0x0000 - 0x1FFF
+-   ROM: 0x0000 - 0x0FFF #4kB
+-   RAM: 0x1000 - 0x17FF #2kB
+-   I/O: 0x1800 - 0x1FFF #2kB, not yet implemented
+
+Note For ROM: "Every pair of 2 bytes make up the IR" # ex. 0x0000 is left 8 bits of IR and 0x0001 is right 8 bits of IR
+
+IR: "16-Bit" # Current Instruction being Executed
+-  0-7: "Instruction" # 8-bit, total 256 instructions
+- 8-23: "Argument 1" # 16-bit
 
 Registers:
 	- Special:
 		- IR:	  "24-Bit" # Current Instruction being Executed
 		- Output: "8-Bit" # Display it's content on 7-segment displays
 		- SUM: 	  "8-Bit" # Output Of ADD/SUB
-		- MAR:	  "8-Bit" # Current Memory Address
+		- MAR:	  "16-Bit" # Current Memory Address
 
 	- Gneral Purpose:
 		- A: "8-Bit"   - # General Purpose and operand 1 of alu
@@ -98,7 +106,6 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-
 	- 1:  {"LDA", "MEM Add. (8)"} # Load Value Of MEM Add. Into Reg. A
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
@@ -135,7 +142,6 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-
 	- 5:  {"ADD", "MEM Add. A (8)", "MEM Add. B (8)"} # Add MEM Add. A and B And Store Result In SUM Reg
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
@@ -163,7 +169,6 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-
 	- 8:  {"MEM", "MEM Add. (8)"} # Set Memory Address Reg to MEM Add.
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
@@ -182,7 +187,6 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	
 	- 10: {"JMP", "Storage Add. (11)"} # Jump storage to a specific address
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
@@ -210,7 +214,6 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	
 	- 13: {"OUT", "MEM Add. (8)"} # Output Value Of a memory address
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
@@ -229,7 +232,6 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-
 	- 15: {"PLH"} # A Placeholder Instruction
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
@@ -365,7 +367,6 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	
 	- 30: {"RST"} # Reset The CPU Other than ram and storage and clear everything
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"

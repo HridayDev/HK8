@@ -17,8 +17,8 @@ Memory: "13-bit Wide" # Total 8kb, 0x0000 - 0x1FFF
 Note For ROM: "Every pair of 2 bytes make up the IR" # ex. 0x0000 is left 8 bits of IR and 0x0001 is right 8 bits of IR
 
 IR: "16-Bit" # Current Instruction being Executed
--  0-7: "Instruction" # 8-bit, total 256 instructions
-- 8-23: "Argument 1" # 16-bit
+-  0-4: "Instruction" # 5-bit, total 32 instructions
+- 5-15: "Argument 1" # 11-bit
  
 Registers:
 	- Special:

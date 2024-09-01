@@ -9,15 +9,16 @@
 
 
 
-Memory: "16-bit Wide" # Total 8kb, 0x0000 - 0x1FFF
--   ROM: 0x0000 - 0x0FFF #16kB - 28C64 x2
--   RAM: 0x1000 - 0x17FF #8kB - 28C64
--   I/O: 0x1800 - 0x1FFF #40kB, not yet implemented
+# no I/O as of right now
+# ram and rom are same just with differnt chips and instructions
 
-Note For ROM: "Every pair of 2 bytes make up the IR" # ex. 0x0000 is left 8 bits of IR and 0x0001 is right 8 bits of IR
+RAM: "11-bits" # 2048 Bytes
+
+# rom is 16-bit data due to ir size
+ROM: "11-bits * 2" # 4096 Bytes
 
 IR: "16-Bit" # Current Instruction being Executed
--  0-4: "Instruction" # 5-bit, total 32 instructions
+-  0-04: "Instruction" # 5-bit, total 32 instructions
 - 5-15: "Argument 1" # 11-bit
  
 Registers:

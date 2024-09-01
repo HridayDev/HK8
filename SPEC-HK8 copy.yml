@@ -23,14 +23,16 @@ IR: "16-Bit" # Current Instruction being Executed
  
 Registers:
 	- Special:
-		- IR:	  "24-Bit" # Current Instruction being Executed
+		- IR:	  "16-Bit" # Current Instruction being Executed
 		- Output: "8-Bit" # Display it's content on 7-segment displays
 		- SUM: 	  "8-Bit" # Output Of ADD/SUB
-		- MAR:	  "16-Bit" # Current Memory Address
+		- MAR:	  "11-Bit" # Current Memory Address
 
-	- Gneral Purpose:
-		- A: "8-Bit"   - # General Purpose and operand 1 of alu
-		- B: "8-Bit"   - # General Purpose and operand 2 of alu
+	- Gneral Purpose (ALU INPUTS):
+		- A: "8-Bit" # General Purpose Register A
+    - B: "8-Bit" # General Purpose Register B
+
+	- Gneral Purpose (REGISTER FILE): "3-bit address" # 8 total registers each 8-bit data
 
 	- FLAGS: "2-Bit"  # CPU Flags
 		- 0: "Zero Flag"  # It is set if the output of last alu operation was Zero(0)
@@ -41,23 +43,23 @@ Components List:
 	- 8-Bit BUS
 	- 11-Bit BUS
 	- Clock
-	- Output
-	- Output Reg.
+	- Output + Output Reg.
 	- ALU
 	- SUM Reg.
-	- Flags/Flags Reg.
+	- Flags + Flags Reg.
 	- MAR
 	- Memory
 	- A Reg.
 	- B Reg.
+  - Register File
 	- IR
 	- Counter
 	- Storage
 	- Control Signals
 	- Control Unit
 
-
-Micro Instructions: "21 (MAX 24)":
+# TODO
+Micro Instructions: "21 (MAX 24)": # NEED TO BE REIMPLEMENTED
 	- Basics:
 		- HALT: "Halt The Clock"
 		- REST: "Reset Everything Other Than RAM and Storage"
@@ -107,6 +109,7 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
+
 	-  1: {"ADD"} # Add reg A and B And Store Result In SUM Reg
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
@@ -125,6 +128,7 @@ Instructions (17, upto 32):
 		- 5: "MEMO|BRIN|SUBS|FLAG"
 		- 6: "0"
 		- 7: "0"
+
 	-  3: {"LDA", "MEM Add. (11)"} # Load Value Of MEM Add. Into Reg. A
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
@@ -143,7 +147,17 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	-  5: {"LDB", "MEM Add. (11)"} # Load Value Of MEM Add. Into Reg. B
+	-  5: {"LIA", "VAL (8)"} # Load Imidieate value VAL Into MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "IROT|MEMI"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+
+	-  6: {"LDB", "MEM Add. (11)"} # Load Value Of MEM Add. Into Reg. B
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|MARI"
@@ -152,7 +166,7 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	-  6: {"STB", "MEM Add. (11)"} # Store Value Of Reg. A Into MEM Add.
+	-  7: {"STB", "MEM Add. (11)"} # Store Value Of Reg. A Into MEM Add.
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|MARI"
@@ -161,7 +175,17 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	-  7: {"STS", "MEM Add. (11)"} # Store SUM reg to MEM Add.
+  -  8: {"LIB", "VAL (8)"} # Load Imidieate value VAL Into MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "IROT|MEMI"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+
+	-  9: {"STS", "MEM Add. (11)"} # Store SUM reg to MEM Add.
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|MARI"
@@ -170,61 +194,8 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	-  8: {"LIA", "VAL (8)"} # Load Imidieate value VAL Into MEM Add.
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROS|MARI"
-		- 3: "IROT|MEMI"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-  -  9: {"LIB", "VAL (8)"} # Load Imidieate value VAL Into MEM Add.
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROS|MARI"
-		- 3: "IROT|MEMI"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 10: {"MEM", "MEM Add. (11)"} # Set Memory Address Reg to MEM Add.
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROS|MARI"
-		- 3: "0"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 11: {"JMP", "Storage Add. (11)"} # Jump storage to a specific address
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
-		- 3: "0"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 12: {"JPZ", "Storage Add. (11)"} # Jump storage to a specific address ONLY IF zero flag is set
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
-		- 3: "0"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 13: {"JPC", "Storage Add. (11)"} # Jump storage to a specific address ONLY IF Carry flag is set
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
-		- 3: "0"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 14: {"OUT", "MEM Add. (11)"} # Output Value Of a memory address
+
+	- 10: {"OUT", "MEM Add. (11)"} # Output Value Of a memory address
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|MARI"
@@ -233,7 +204,7 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	- 15: {"OTI", "VAL (8)"} # Output a imidieate value
+	- 11: {"OTI", "VAL (8)"} # Output a imidieate value
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|OUTI"
@@ -242,6 +213,45 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
+
+	- 12: {"JMP", "Storage Add. (11)"} # Jump storage to a specific address
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 13: {"JPZ", "Storage Add. (11)"} # Jump storage to a specific address ONLY IF zero flag is set
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 14: {"JPC", "Storage Add. (11)"} # Jump storage to a specific address ONLY IF Carry flag is set
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+
+	- 15: {"MEM", "MEM Add. (11)"} # Set Memory Address Reg to MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+
 	- 16: {"PLH"} # A Placeholder Instruction
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
@@ -368,6 +378,7 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
+
 	- 30: {"RST"} # Reset The CPU Other than ram and storage and clear everything
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"

@@ -9,10 +9,10 @@
 
 
 
-Memory: "13-bit Wide" # Total 8kb, 0x0000 - 0x1FFF
--   ROM: 0x0000 - 0x0FFF #4kB
--   RAM: 0x1000 - 0x17FF #2kB
--   I/O: 0x1800 - 0x1FFF #2kB, not yet implemented
+Memory: "16-bit Wide" # Total 8kb, 0x0000 - 0x1FFF
+-   ROM: 0x0000 - 0x0FFF #16kB - 28C64 x2
+-   RAM: 0x1000 - 0x17FF #8kB - 28C64
+-   I/O: 0x1800 - 0x1FFF #40kB, not yet implemented
 
 Note For ROM: "Every pair of 2 bytes make up the IR" # ex. 0x0000 is left 8 bits of IR and 0x0001 is right 8 bits of IR
 
@@ -97,7 +97,7 @@ Micro Instructions: "21 (MAX 24)":
 
 Instructions (17, upto 32):
 
-	- 0:  {"NOP"} # Do Nothing
+	-  0: {"NOP"} # Do Nothing
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "0"
@@ -106,43 +106,7 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	- 1:  {"LDA", "MEM Add. (8)"} # Load Value Of MEM Add. Into Reg. A
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROS|MARI"
-		- 3: "MEMO|ARIN"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 2:  {"STA", "MEM Add. (8)"} # Store Value Of Reg. A Into MEM Add.
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROS|MARI"
-		- 3: "AOUT|MEMI"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 3:  {"LDB", "MEM Add. (8)"} # Load Value Of MEM Add. Into Reg. B
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROS|MARI"
-		- 3: "MEMO|BRIN"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 4:  {"STB", "MEM Add. (8)"} # Store Value Of Reg. A Into MEM Add.
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROS|MARI"
-		- 3: "BOUT|MEMI"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 5:  {"ADD", "MEM Add. A (8)", "MEM Add. B (8)"} # Add MEM Add. A and B And Store Result In SUM Reg
+	-  1: {"ADD"} # Add reg A and B And Store Result In SUM Reg
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|MARI"
@@ -151,7 +115,7 @@ Instructions (17, upto 32):
 		- 5: "MEMO|BRIN|ADDS|FLAG"
 		- 6: ""
 		- 7: "0"
-	- 6:  {"SUB", "MEM Add. A (8)", "MEM Add. B (8)"} # Subtract MEM Add. B from A And Store Result In SUM Reg
+	-  2: {"SUB"} # Subtract MEM Add. B from A And Store Result In SUM Reg
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|MARI"
@@ -160,7 +124,43 @@ Instructions (17, upto 32):
 		- 5: "MEMO|BRIN|SUBS|FLAG"
 		- 6: "0"
 		- 7: "0"
-	- 7:  {"STS", "MEM Add. (8)"} # Store SUM reg to MEM Add.
+	-  3: {"LDA", "MEM Add. (11)"} # Load Value Of MEM Add. Into Reg. A
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "MEMO|ARIN"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	-  4: {"STA", "MEM Add. (11)"} # Store Value Of Reg. A Into MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "AOUT|MEMI"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	-  5: {"LDB", "MEM Add. (11)"} # Load Value Of MEM Add. Into Reg. B
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "MEMO|BRIN"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	-  6: {"STB", "MEM Add. (11)"} # Store Value Of Reg. A Into MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "BOUT|MEMI"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	-  7: {"STS", "MEM Add. (11)"} # Store SUM reg to MEM Add.
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|MARI"
@@ -169,16 +169,7 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	- 8:  {"MEM", "MEM Add. (8)"} # Set Memory Address Reg to MEM Add.
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "IROS|MARI"
-		- 3: "0"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 9:  {"LDI", "MEM Add. (8)", "VAL (8)"} # Load Imidieate value VAL Into MEM Add.
+	-  8: {"LIA", "VAL (8)"} # Load Imidieate value VAL Into MEM Add.
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|MARI"
@@ -187,7 +178,25 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	- 10: {"JMP", "Storage Add. (11)"} # Jump storage to a specific address
+  -  9: {"LIB", "VAL (8)"} # Load Imidieate value VAL Into MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "IROT|MEMI"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 10: {"MEM", "MEM Add. (11)"} # Set Memory Address Reg to MEM Add.
+		- 0: "COUT|SARI"
+		- 1: "CINC|STIR"
+		- 2: "IROS|MARI"
+		- 3: "0"
+		- 4: "0"
+		- 5: "0"
+		- 6: "0"
+		- 7: "0"
+	- 11: {"JMP", "Storage Add. (11)"} # Jump storage to a specific address
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
@@ -196,7 +205,7 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	- 11: {"JPZ", "Storage Add. (11)"} # Jump storage to a specific address ONLY IF zero flag is set
+	- 12: {"JPZ", "Storage Add. (11)"} # Jump storage to a specific address ONLY IF zero flag is set
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
@@ -205,7 +214,7 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	- 12: {"JPC", "Storage Add. (11)"} # Jump storage to a specific address ONLY IF Carry flag is set
+	- 13: {"JPC", "Storage Add. (11)"} # Jump storage to a specific address ONLY IF Carry flag is set
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROA|SARI|STIR" # ONLY IF CARRY IS SET (condition fulfilled by hardware)
@@ -214,7 +223,7 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	- 13: {"OUT", "MEM Add. (8)"} # Output Value Of a memory address
+	- 14: {"OUT", "MEM Add. (11)"} # Output Value Of a memory address
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|MARI"
@@ -223,19 +232,10 @@ Instructions (17, upto 32):
 		- 5: "0"
 		- 6: "0"
 		- 7: "0"
-	- 14: {"OTI", "VAL (8)"} # Output a imidieate value
+	- 15: {"OTI", "VAL (8)"} # Output a imidieate value
 		- 0: "COUT|SARI"
 		- 1: "CINC|STIR"
 		- 2: "IROS|OUTI"
-		- 3: "0"
-		- 4: "0"
-		- 5: "0"
-		- 6: "0"
-		- 7: "0"
-	- 15: {"PLH"} # A Placeholder Instruction
-		- 0: "COUT|SARI"
-		- 1: "CINC|STIR"
-		- 2: "0"
 		- 3: "0"
 		- 4: "0"
 		- 5: "0"
